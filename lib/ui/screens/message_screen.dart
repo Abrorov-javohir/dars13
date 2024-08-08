@@ -1,4 +1,5 @@
 import 'package:dars13/data/model/contact_model.dart';
+import 'package:dars13/ui/widgets/chat_item.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -15,7 +16,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
-  final List<ChatBubble> _messages = [];
+  final List<ChatItem> _messages = [];
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -23,7 +24,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (image != null) {
       setState(() {
-        _messages.add(ChatBubble(
+        _messages.add(ChatItem(
           message: image.path,
           isSentByMe: true,
           isImage: true,
@@ -38,7 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (result != null && result.files.single.path != null) {
       File file = File(result.files.single.path!);
       setState(() {
-        _messages.add(ChatBubble(
+        _messages.add(ChatItem(
           message: file.path,
           isSentByMe: true,
           isFile: true,
@@ -50,7 +51,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
       setState(() {
-        _messages.add(ChatBubble(
+        _messages.add(ChatItem(
           message: _controller.text,
           isSentByMe: true,
         ));
@@ -63,7 +64,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.contact.contactName} ${widget.contact.contactLastname}"),
+        title: Text(
+            "${widget.contact.contactName} ${widget.contact.contactLastname}"),
       ),
       body: Column(
         children: [
@@ -106,50 +108,6 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class ChatBubble extends StatelessWidget {
-  final String message;
-  final bool isSentByMe;
-  final bool isImage;
-  final bool isFile;
-
-  ChatBubble({
-    required this.message,
-    required this.isSentByMe,
-    this.isImage = false,
-    this.isFile = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: isSentByMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
-        padding: const EdgeInsets.all(10.0),
-        decoration: BoxDecoration(
-          color: isSentByMe ? Colors.red : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: isImage
-            ? Image.file(File(message), width: 150, height: 150, fit: BoxFit.cover)
-            : isFile
-                ? Text(
-                    'File: ${message.split('/').last}',
-                    style: TextStyle(
-                      color: isSentByMe ? Colors.white : Colors.black,
-                    ),
-                  )
-                : Text(
-                    message,
-                    style: TextStyle(
-                      color: isSentByMe ? Colors.white : Colors.black,
-                    ),
-                  ),
       ),
     );
   }
